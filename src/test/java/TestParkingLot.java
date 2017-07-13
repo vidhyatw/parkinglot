@@ -1,4 +1,5 @@
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -6,68 +7,90 @@ import org.junit.Test;
  */
 public class TestParkingLot {
 
+    private ParkingLot lot;
+    private Car car1,car2, car3, car4;
+    ParkingLotOwner owner;
+    SecurityStaff securityStaff;
+
+    @Before
+    public void setup() {
+        owner = new ParkingLotOwner();
+        securityStaff = new SecurityStaff();
+
+        lot = new ParkingLot(3);
+        lot.subscribeParkingLotMessages(owner);
+        lot.subscribeParkingLotMessages(securityStaff);
+
+        car1 = new Car("1#");
+        car2 = new Car("2#");
+        car3 = new Car("3#");
+        car4 = new Car("4#");
+    }
+
     @Test
     public void test_ParkCar(){
-        ParkingLot lot = new ParkingLot(2);
-        Car car = new Car();
-        Assert.assertTrue(lot.park(car));
+
+        Assert.assertTrue(lot.park(car1));
     }
 
     @Test
     public void test_DoNotParkCar_WhenLotIsFull(){
-        ParkingLot lot = new ParkingLot(2);
-        Car car = new Car();
-        Assert.assertTrue(lot.park(car));
-        Car car2 = new Car();
+        Assert.assertTrue(lot.park(car1));
         Assert.assertTrue(lot.park(car2));
-        Car car3 = new Car();
-        Assert.assertFalse(lot.park(car3));
+        lot.park(car3);
+        Assert.assertFalse(lot.park(car4));
     }
 
     @Test
     public void test_ParkAParkedCar(){
-        ParkingLot lot = new ParkingLot(2);
-        Car car = new Car();
-        lot.park(car);
-        Assert.assertFalse(lot.park(car));
+        lot.park(car1);
+        Assert.assertFalse(lot.park(car1));
 
     }
 
     @Test
     public void test_UnparkCar(){
-        ParkingLot lot = new ParkingLot(5);
-        Car car = new Car();
-        lot.park(car);
-        Assert.assertTrue(lot.unpark(car));
+        lot.park(car1);
+        Assert.assertTrue(lot.unpark(car1));
     }
 
     @Test
-    public void test_UnparkAUnparkedCar(){
-        ParkingLot lot = new ParkingLot(5);
-        Car car = new Car();
-        Assert.assertTrue(lot.park(car));
-        Assert.assertTrue(lot.unpark(car));
-        Assert.assertFalse(lot.unpark(car));
+    public void test_UnparkAnUnparkedCar(){
+        Assert.assertTrue(lot.park(car1));
+        Assert.assertTrue(lot.unpark(car1));
+        Assert.assertFalse(lot.unpark(car1));
     }
 
     @Test
     public void test_IsParkingLotFull(){
-        ParkingLot lot = new ParkingLot(2);
-        Car car1 = new Car();
         lot.park(car1);
-        Car car2 = new Car();
         lot.park(car2);
-        boolean isFull=lot.isFull();
-        Assert.assertTrue(isFull);
+        lot.park(car3);
+        lot.park(car4);
+        Assert.assertTrue(lot.isFull());
     }
 
     @Test
     public void test_IsParkingAvailable(){
-        ParkingLot lot = new ParkingLot(2);
-        Car car1 = new Car();
         lot.park(car1);
-        boolean isFull=lot.isFull();
-        Assert.assertFalse(isFull);
+        Assert.assertFalse(lot.isFull());
     }
 
+    @Test
+    public void test_NotifyOwnerWhenLotIsFull(){
+        owner.displayMessage = false;
+        lot.park(car1);
+        lot.park(car2);
+        lot.park(car3);
+        Assert.assertTrue(owner.displayMessage);
+    }
+
+    @Test
+    public void test_NotifySecurityWhenLotIsFull(){
+        securityStaff.displayMessage = false;
+        lot.park(car1);
+        lot.park(car2);
+        lot.park(car3);
+        Assert.assertTrue(securityStaff.displayMessage);
+    }
 }

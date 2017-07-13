@@ -6,38 +6,72 @@ import java.util.*;
 public class ParkingLot {
 
     private final int parkingLotSize;
-    private final Set< Car> slotList;
+    private final Set< Car> parkingSlots;
+    private List <ParkingMessageSubscriber> parkingMessageSubscribers;
 
     public ParkingLot(int parkingLotSize) {
 
         this.parkingLotSize = parkingLotSize;
 
-        slotList = new HashSet<Car>();
+        parkingSlots = new HashSet<Car>();
+        parkingMessageSubscribers = new ArrayList<ParkingMessageSubscriber>();
+
+    }
+
+    public boolean subscribeParkingLotMessages(ParkingMessageSubscriber subscriber) {
+        parkingMessageSubscribers.add(subscriber);
+        return true;
+    }
+
+
+    public boolean unpark(Car car) {
+
+
+        boolean unpark = parkingSlots.remove(car);
+        if(unpark) {
+            notifyParkingMessageSubscribers();
+
+        }
+        return unpark;
 
     }
 
 
     public boolean park( Car car){
 
-        boolean assigned = assignSlot(car);
-        return assigned;
-    }
-
-    public boolean unpark(Car car) {
-        return slotList.remove(car);
-    }
-
-
-    private boolean assignSlot(Car car) {
         if (isFull()) {
             return false;
         }
-        return slotList.add(car);
+
+
+        boolean slotAssigned =  parkingSlots.add(car);
+        notifyParkingMessageSubscribers();
+
+        return slotAssigned;
     }
 
     public boolean isFull() {
-        return slotList.size() == parkingLotSize;
+        return parkingSlots.size() == parkingLotSize;
     }
 
+    public boolean wasFull() {return parkingSlots.size() + 1 == parkingLotSize; }
 
+    public void notifyParkingMessageSubscribers( ) {
+
+        if (isFull()) {
+            notifyEachSubscriber("Parking lot is full");
+        }
+
+        else if(wasFull()) {
+            notifyEachSubscriber("Parking is available");
+
+        }
+    }
+
+    private void notifyEachSubscriber(String message) {
+        for (ParkingMessageSubscriber subscriber : parkingMessageSubscribers) {
+            subscriber.subscribeToParkingMessage(message);
+        }
+
+    }
 }
