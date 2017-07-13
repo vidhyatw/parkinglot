@@ -12,4 +12,12 @@ public class TestParkingLot {
         Car car = new Car();
         Assert.assertTrue(lot.park(car));
     }
+
+    @Test
+    public void test_UnparkCar(){
+        ParkingLot lot = new ParkingLot();
+        Car car = new Car();
+        Assert.assertTrue(lot.Unpark(car));
+    }
+
 }

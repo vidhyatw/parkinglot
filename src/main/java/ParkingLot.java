@@ -3,13 +3,23 @@
  */
 public class ParkingLot {
 
-    public Slot getEmptySlot() {
+    private Slot getEmptySlot() {
         return new Slot();
     }
 
-    public boolean park(Car car){
+    public boolean park( Car car){
         Slot s = getEmptySlot();
         boolean assigned = s.assign(car);
         return assigned;
+    }
+
+    public boolean Unpark( Car car) {
+        Slot s = getSlotOfParkedCar(car);
+        boolean release = s.unassign(car);
+        return release;
+    }
+
+    private Slot getSlotOfParkedCar(Car car) {
+        return new Slot();
     }
 }

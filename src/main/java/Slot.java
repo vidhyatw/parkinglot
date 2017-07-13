@@ -11,4 +11,8 @@ public class Slot {
     }
 
 
+    public boolean unassign(Car car) {
+        this.slotAssign = null;
+        return true;
+    }
 }
