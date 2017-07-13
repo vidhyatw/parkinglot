@@ -5,16 +5,14 @@ import java.util.*;
  */
 public class ParkingLot {
 
-    private int parkingLotSize;
-
-
-    private List< Car> slotList;
+    private final int parkingLotSize;
+    private final Set< Car> slotList;
 
     public ParkingLot(int parkingLotSize) {
 
         this.parkingLotSize = parkingLotSize;
 
-        slotList = new ArrayList<Car>();
+        slotList = new HashSet<Car>();
 
     }
 
@@ -25,22 +23,16 @@ public class ParkingLot {
         return assigned;
     }
 
-    public boolean Unpark( Car car) {
-
+    public boolean unpark(Car car) {
         return slotList.remove(car);
-
     }
 
 
     private boolean assignSlot(Car car) {
-
-
         if (isFull()) {
             return false;
         }
-
-        slotList.add(car);
-        return true;
+        return slotList.add(car);
     }
 
     public boolean isFull() {
